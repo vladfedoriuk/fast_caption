@@ -56,7 +56,7 @@ Though be careful and **always** review what gets generated!
   - Async SQLAlchemy ORM [docs](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html)
 
   - SQLModel [docs](https://sqlmodel.tiangolo.com/features/)
-  
+  - Project setup [guide](https://testdriven.io/blog/fastapi-sqlmodel/)
 
 - Run the development server as follows:
 ```commandline
