@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse
 from models import ImageData
 from state import get_session
 from state.models import Caption, CaptionBase
-from tasks.pipeline import fetch_image
+from tasks.pipeline import process_image
 
 app = FastAPI()
 
@@ -29,7 +29,7 @@ async def enquire_caption(
     session.add(caption_obj)
     await session.commit()
     await session.refresh(caption_obj)
-    background_tasks.add_task(fetch_image, image_data.url, caption_obj.pk)
+    background_tasks.add_task(process_image, image_data.url, caption_obj.pk)
     return JSONResponse(
         jsonable_encoder(caption_obj), status_code=status.HTTP_202_ACCEPTED
     )

@@ -15,7 +15,7 @@ def generate_caption(image: np.array) -> str:
     return "Mock caption"
 
 
-async def fetch_image(image_url: str, caption_uuid: uuid.UUID):
+async def process_image(image_url: str, caption_uuid: uuid.UUID):
     try:
         response: Response = requests.get(url=image_url)
         response.raise_for_status()
