@@ -1,0 +1,13 @@
+# API related
+fastapi[all]
+asyncpg
+sqlmodel
+sqlalchemy
+alembic
+
+# ML model related
+pillow
+numpy
+
+# Linters
+black

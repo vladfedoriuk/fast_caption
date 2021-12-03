@@ -1,0 +1,45 @@
+version: "3"
+
+volumes:
+  pg_data:
+  pgadmin_data:
+
+networks:
+  fast_caption_net:
+
+services:
+  db:
+    image: postgres
+    env_file:
+      - ../.env
+    ports:
+      - "127.0.0.1:15432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - fast_caption_net
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1024k"
+        max-file: "5"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - ../.env
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    links:
+      - "db:psql-server"
+    restart: always
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1024k"
+        max-file: "5"
+
+
