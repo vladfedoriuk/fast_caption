@@ -37,7 +37,8 @@ async def enquire_caption(
 
 @app.get("/retrieve-caption/", status_code=status.HTTP_200_OK, response_model=Caption)
 async def retrieve_caption(
-    caption_uuid: uuid.UUID, session: AsyncSession = Depends(get_session),
+    caption_uuid: uuid.UUID,
+    session: AsyncSession = Depends(get_session),
 ):
     try:
         caption_obj = await session.execute(
@@ -46,6 +47,4 @@ async def retrieve_caption(
         caption_obj = caption_obj.scalars().one()
     except (sqlalchemy.exc.MultipleResultsFound, sqlalchemy.exc.NoResultFound) as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    return JSONResponse(
-        jsonable_encoder(caption_obj), status_code=status.HTTP_200_OK
-    )
+    return JSONResponse(jsonable_encoder(caption_obj), status_code=status.HTTP_200_OK)
