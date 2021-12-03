@@ -23,6 +23,41 @@ pip install pip-tools==6.4.0
 make requirements
 ```
 
+- Install development requirements:
+```commandline
+pip install -r requirements/dev.txt
+```
+or
+```commandline
+make install-dev
+```
+- Bring up the services (PostgreSQL database and pgAdmin4):
+```commandline
+make services
+```
+- To perform migrations on the database:
+  
+```commandline
+alembic upgrade head
+```
+
+- To autogenerate new migrations:
+  
+```commandline
+alembic revision --autogenerate -m "Your message goes here"
+```
+Though be careful and **always** review what gets generated!
+
+- Some useful links:
+  - Migrations [docs](https://alembic.sqlalchemy.org/en/latest/autogenerate.html)
+    
+  - Asyncio with Alembic [docs](https://alembic.sqlalchemy.org/en/latest/cookbook.html#using-asyncio-with-alembic)
+
+  - Async SQLAlchemy ORM [docs](https://docs.sqlalchemy.org/en/14/orm/extensions/asyncio.html)
+
+  - SQLModel [docs](https://sqlmodel.tiangolo.com/features/)
+  
+
 - Run the development server as follows:
 ```commandline
 uvicorn main:app --reload
