@@ -31,6 +31,11 @@ or
 ```commandline
 make install-dev
 ```
+- Apparently, pip-tools do not handle tensorflow well, so install it manually:
+  
+```commandline
+pip install tensorflow keras
+```
 - Bring up the services (PostgreSQL database and pgAdmin4):
 ```commandline
 make services

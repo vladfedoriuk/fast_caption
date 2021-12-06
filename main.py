@@ -10,9 +10,15 @@ from starlette.responses import JSONResponse
 from models import ImageData
 from state import get_session
 from state.models import Caption, CaptionBase
+from tasks.model import get_model
 from tasks.pipeline import process_image
 
 app = FastAPI()
+
+
+@app.on_event("startup")
+async def startup_event():
+    get_model()
 
 
 @app.post(
