@@ -9,10 +9,25 @@ The API for a selected image captioning model.
   via `pyenv`:
   
 ```commandline
-pyenv install 3.10.0
-pyenv virtualenv 3.10.0 fast_caption
+pyenv install 3.8.12
+pyenv virtualenv 3.8.12 fast_caption
 pyenv local fast_caption
 ```
+
+- Create a `.env` file with the following environment variables:
+```commandline
+# PGADMIN
+PGADMIN_DEFAULT_EMAIL=...  # insert your values
+PGADMIN_DEFAULT_PASSWORD=...
+PGADMIN_LISTEN_PORT=...
+
+# DB
+POSTGRES_USER=...
+POSTGRES_PASSWORD=...
+POSTGRES_DB=...
+```
+
+- Do not forget to modify the `alembic.ini` file:`sqlalchemy.url` must match the environment variables setup 
 
 - To  better manage the package versions and their dependencies consistency,
 the project employs `pip-tools`.
@@ -62,6 +77,8 @@ Though be careful and **always** review what gets generated!
 
   - SQLModel [docs](https://sqlmodel.tiangolo.com/features/)
   - Project setup [guide](https://testdriven.io/blog/fastapi-sqlmodel/)
+  - Pydantic [docs](https://pydantic-docs.helpmanual.io/)
+  - FastAPI [docs](https://fastapi.tiangolo.com/)
 
 - Run the development server as follows:
 ```commandline
