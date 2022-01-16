@@ -15,6 +15,7 @@ services:
     ports:
       - "127.0.0.1:15432:5432"
     volumes:
+      - ./db/init.sh:/docker-entrypoint-initdb.d/init.sh
       - pg_data:/var/lib/postgresql/data
     networks:
       - fast_caption_net
@@ -33,7 +34,7 @@ services:
       - "127.0.0.1:8080:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
-    links:
+    links:  # Links allow you to define extra aliases by which a service is reachable from another service.
       - "db:psql-server"
     restart: always
     logging:
