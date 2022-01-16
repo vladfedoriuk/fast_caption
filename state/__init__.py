@@ -8,11 +8,13 @@ from sqlalchemy.orm import sessionmaker
 
 settings = get_settings()
 
+print('***********', settings.postgres_url)
 engine = create_async_engine(settings.postgres_url, echo=True, future=True)
 
 
 async def init_db():
     async with engine.begin() as conn:
+        await conn.run_sync(SQLModel.metadata.drop_all)
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
