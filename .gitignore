@@ -130,3 +130,6 @@ dmypy.json
 
 # Env vars
 .env
+
+# IDEA
+.idea/
