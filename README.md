@@ -82,7 +82,17 @@ Though be careful and **always** review what gets generated!
   - Project setup [guide](https://testdriven.io/blog/fastapi-sqlmodel/)
   - Pydantic [docs](https://pydantic-docs.helpmanual.io/)
   - FastAPI [docs](https://fastapi.tiangolo.com/)
-
+  - Setting up tests:
+      - [DB setup](https://graspingtech.com/docker-compose-postgresql/)
+      - [fastapi docs](https://fastapi.tiangolo.com/advanced/async-tests/)
+      - [sync connection and session](https://www.mybluelinux.com/database-integration-tests-with-pytest-sqlalchemy-and-factory-boy-with-faker/)
+      - [another sync setup](https://itnext.io/setting-up-transactional-tests-with-pytest-and-sqlalchemy-b2d726347629)
+      - [async conection and session](https://rogulski.it/blog/fastapi-async-db/)
+      - [he one used in the project](https://rogulski.it/blog/sqlalchemy-14-async-orm-with-fastapi/)
+  - Tutorials:
+    - https://testdriven.io/blog/topics/fastapi/
+    - https://towardsdatascience.com/build-an-async-python-service-with-fastapi-sqlalchemy-196d8792fa08
+    - https://stribny.name/blog/fastapi-asyncalchemy/
 - Run the development server as follows:
 ```commandline
 uvicorn main:app --reload
