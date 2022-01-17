@@ -8,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 
 settings = get_settings()
 
-print('***********', settings.postgres_url)
 engine = create_async_engine(settings.postgres_url, echo=True, future=True)
 
 
