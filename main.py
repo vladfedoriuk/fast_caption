@@ -1,7 +1,7 @@
 import uuid
 
 import sqlalchemy.exc
-from fastapi import FastAPI, BackgroundTasks, status, Depends, HTTPException
+from fastapi import FastAPI, BackgroundTasks, status, Depends, HTTPException, APIRouter
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +13,11 @@ from state.models import Caption, CaptionBase
 from tasks.model import get_model
 from tasks.pipeline import process_image
 
+router = APIRouter(
+    prefix="/caption",
+    tags=["caption"],
+)
+
 app = FastAPI()
 
 
@@ -21,8 +26,8 @@ async def startup_event():
     get_model()
 
 
-@app.post(
-    "/enquire-caption/",
+@router.post(
+    "/enquire/",
     status_code=status.HTTP_202_ACCEPTED,
     response_model=CaptionBase,
 )
@@ -41,7 +46,7 @@ async def enquire_caption(
     )
 
 
-@app.get("/retrieve-caption/", status_code=status.HTTP_200_OK, response_model=Caption)
+@router.get("/retrieve/", status_code=status.HTTP_200_OK, response_model=Caption)
 async def retrieve_caption(
     caption_uuid: uuid.UUID,
     session: AsyncSession = Depends(get_session),
@@ -52,5 +57,8 @@ async def retrieve_caption(
         )
         caption_obj = caption_obj.scalars().one()
     except (sqlalchemy.exc.MultipleResultsFound, sqlalchemy.exc.NoResultFound) as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     return JSONResponse(jsonable_encoder(caption_obj), status_code=status.HTTP_200_OK)
+
+
+app.include_router(router)
