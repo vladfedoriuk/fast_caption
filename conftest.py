@@ -86,6 +86,7 @@ def app() -> FastAPI:
 def app_with_db(override_get_session: Callable, app) -> FastAPI:
     """Creates an app without loading the model on setup and with database connection"""
     from state import get_session
+
     app.dependency_overrides[get_session] = override_get_session
     return app
 
@@ -95,4 +96,3 @@ async def async_client(app: FastAPI) -> AsyncGenerator:
     """Async HTTP client"""
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac
-

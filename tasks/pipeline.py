@@ -3,17 +3,34 @@ import uuid
 from functools import partial
 
 import httpx
-from requests import Response, RequestException
+from httpx import HTTPError, Response
 from PIL import Image
 from io import BytesIO
 import numpy as np
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette import status
 
-from state import AsyncSessionContext
 from state.models import Caption
 from tasks.model import get_model
 from tasks.model.search import beam_search
 from tasks.model.utils import preprocess_image
-from tasks.utils import get_caption_object_or_none
+from tasks.utils import get_caption_object_or_none, with_session
+
+
+@with_session
+async def update_caption(
+    session: AsyncSession,
+    caption_uuid: uuid.UUID,
+    fetch_status: int = status.HTTP_202_ACCEPTED,
+    fetch_error: str = "",
+    caption: str = "",
+) -> None:
+    caption_obj: Caption = await get_caption_object_or_none(session, caption_uuid)
+    if caption_obj is not None:
+        caption_obj.fetch_status = fetch_status
+        caption_obj.fetch_error = fetch_error
+        caption_obj.caption = caption
+        session.add(caption_obj)
 
 
 def generate_caption(image: Image) -> str:
@@ -32,25 +49,13 @@ async def process_image(image_url: str, caption_uuid: uuid.UUID):
             response.raise_for_status()
             with Image.open(BytesIO(response.content)) as image:
                 loop = asyncio.get_running_loop()
-                caption = await loop.run_in_executor(None, partial(generate_caption, image))
-                async with AsyncSessionContext() as session:
-                    async with session.begin():
-                        caption_obj: Caption = await get_caption_object_or_none(
-                            session, caption_uuid
-                        )
-                        if caption_obj:
-                            caption_obj.caption = caption
-                            caption_obj.fetch_status = response.status_code
-                            session.add(caption_obj)
-                            await session.commit()
-    except RequestException as e:
-        async with AsyncSessionContext() as session:
-            async with session.begin():
-                caption_obj: Caption = await get_caption_object_or_none(
-                    session, caption_uuid
+                caption = await loop.run_in_executor(
+                    None, partial(generate_caption, image)
                 )
-                if caption_obj:
-                    caption_obj.fetch_status = e.response.status_code
-                    caption_obj.fetch_error = str(e)
-                    session.add(caption_obj)
-                    await session.commit()
+                await update_caption(
+                    caption_uuid, fetch_status=response.status_code, caption=caption
+                )
+    except HTTPError as e:
+        await update_caption(
+            caption_uuid, fetch_status=e.response.status_code, fetch_error=str(e)
+        )

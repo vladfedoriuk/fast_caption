@@ -38,4 +38,3 @@ async def test_retrieve_caption_wrong_caption_uuid(app_with_db, async_client):
         "/caption/retrieve/", params={"caption_uuid": uuid.uuid4()}
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-

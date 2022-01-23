@@ -11,3 +11,6 @@ numpy
 
 # Linters
 black
+
+# Types
+typing-extensions
