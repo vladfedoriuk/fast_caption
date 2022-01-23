@@ -20,7 +20,7 @@ def image_crop_center(img: Image) -> Image:
     w, h = model_conf.IMAGE_SIZE.get("vgg16")
     img_width, img_height = img.size
     if img_width < w or img_height < h:
-        return img.resize(w, h)
+        return img.resize((w, h))
     left, right = (img_width - w) / 2, (img_width + w) / 2
     top, bottom = (img_height - h) / 2, (img_height + h) / 2
     left, top = round(max(0, left)), round(max(0, top))

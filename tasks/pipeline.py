@@ -1,4 +1,6 @@
+import asyncio
 import uuid
+from functools import partial
 
 import httpx
 from requests import Response, RequestException
@@ -29,7 +31,8 @@ async def process_image(image_url: str, caption_uuid: uuid.UUID):
             response: Response = await client.get(url=image_url)
             response.raise_for_status()
             with Image.open(BytesIO(response.content)) as image:
-                caption = generate_caption(image)
+                loop = asyncio.get_running_loop()
+                caption = await loop.run_in_executor(None, partial(generate_caption, image))
                 async with AsyncSessionContext() as session:
                     async with session.begin():
                         caption_obj: Caption = await get_caption_object_or_none(

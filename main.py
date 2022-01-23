@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 
 import sqlalchemy.exc
@@ -23,7 +24,8 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup_event():
-    get_model()
+    loop = asyncio.get_running_loop()
+    await loop.run_in_executor(None, get_model)
 
 
 @router.post(
@@ -57,7 +59,7 @@ async def retrieve_caption(
         )
         caption_obj = caption_obj.scalars().one()
     except (sqlalchemy.exc.MultipleResultsFound, sqlalchemy.exc.NoResultFound) as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     return JSONResponse(jsonable_encoder(caption_obj), status_code=status.HTTP_200_OK)
 
 
