@@ -82,7 +82,7 @@ def app() -> FastAPI:
 
 
 @pytest.fixture()
-def app_with_db(override_get_session: Callable[[], AsyncSession], app: FastAPI) -> FastAPI:
+def app_with_db(override_get_session: Callable[[], AsyncGenerator[AsyncSession, Any]], app: FastAPI) -> FastAPI:
     """Creates an app without loading the model on setup and with database connection"""
     from state import get_session
 
