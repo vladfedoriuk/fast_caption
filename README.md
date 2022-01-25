@@ -5,7 +5,7 @@ The API for a selected image captioning model.
 ### Development
 
 - Add a `PyCharm` [plugin](https://plugins.jetbrains.com/plugin/12861-pydantic) to enable a better autocompletion.
-- Configure a virtual environment. The projects runs with `Python 3.10.0`. An example of a virtual environment created
+- Configure a virtual environment. The projects runs with `Python 3.8.12`. An example of a virtual environment created
   via `pyenv`:
 
 ```commandline
