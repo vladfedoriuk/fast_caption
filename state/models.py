@@ -1,13 +1,11 @@
-from sqlmodel import SQLModel, Field
 import uuid
 
+from sqlmodel import Field, SQLModel
 from starlette import status
 
 
 class CaptionBase(SQLModel):
-    pk: uuid.UUID = Field(
-        default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False
-    )
+    pk: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, index=True, nullable=False)
 
     class Config:
         orm_mode = True

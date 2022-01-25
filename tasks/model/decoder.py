@@ -1,7 +1,7 @@
 # decoder
-from keras import Model
-from keras.layers import Embedding, Dense, GRU, Dropout, Concatenate
 import tensorflow as tf
+from keras import Model
+from keras.layers import GRU, Concatenate, Dense, Dropout, Embedding
 
 from tasks.model.config import get_model_configuration
 
@@ -31,9 +31,7 @@ class Decoder(Model):
     def call(self, input, image_features, hidden_state, training=False):
         if training:
             hidden_state = self.dropout(hidden_state)
-        context_vector, context_weights = self.attention(
-            image_features, hidden_state, training=training
-        )
+        context_vector, context_weights = self.attention(image_features, hidden_state, training=training)
         if training:
             context_vector = self.dropout(context_vector)
 

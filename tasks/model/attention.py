@@ -1,7 +1,6 @@
-from keras import Model
-from keras.layers import Dense
-from keras.layers import Dropout
 import tensorflow as tf
+from keras import Model
+from keras.layers import Dense, Dropout
 
 from tasks.model.config import get_model_configuration
 

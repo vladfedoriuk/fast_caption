@@ -1,6 +1,7 @@
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
+
 from state.models import Caption
 
 pytestmark = pytest.mark.anyio

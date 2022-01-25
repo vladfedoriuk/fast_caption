@@ -1,27 +1,28 @@
 import asyncio
+from asyncio import AbstractEventLoop
 from collections.abc import Callable
+from typing import Any, AsyncGenerator, Generator
+from unittest import mock
 
+import pytest
+from fastapi import FastAPI
+from httpx import AsyncClient
+from pytest_mock import MockerFixture
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel
 
-from typing import AsyncGenerator, Generator
-
-import pytest
-from fastapi import FastAPI
-
-from config import get_settings
-from httpx import AsyncClient
+from .config import get_settings
 
 
 @pytest.fixture()
-def anyio_backend():
+def anyio_backend() -> str:
     """Use asyncio as a default backend"""
     return "asyncio"
 
 
 @pytest.fixture(scope="session")
-def event_loop(request) -> Generator:
+def event_loop(request) -> Generator[AbstractEventLoop, Any, Any]:
     """Create an instance of the default event loop for each test case."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
@@ -29,11 +30,9 @@ def event_loop(request) -> Generator:
 
 
 @pytest.fixture(scope="session")
-def get_model(mocker) -> Generator:
+def get_model(mocker: MockerFixture) -> Generator[mock.MagicMock, Any, Any]:
     """Mock the model loading and the returned models"""
-    mocked_get_model = mocker.patch(
-        "tasks.model.pretrained.get_model", mocker.MagicMock
-    )
+    mocked_get_model = mocker.patch("tasks.model.pretrained.get_model", mocker.MagicMock)
     feature_extractor_mock = mocker.MagicMock()
     attention_mock = mocker.MagicMock()
     encoder_mock = mocker.MagicMock()
@@ -48,7 +47,7 @@ def get_model(mocker) -> Generator:
 
 
 @pytest.fixture()
-async def db_session() -> AsyncSession:
+async def db_session() -> AsyncGenerator[AsyncSession, Any]:
     """Mock the database session"""
     settings = get_settings()
     engine = create_async_engine(settings.postgres_url, echo=True, future=True)
@@ -63,10 +62,10 @@ async def db_session() -> AsyncSession:
 
 
 @pytest.fixture()
-def override_get_session(db_session: AsyncSession) -> Callable:
+def override_get_session(db_session: AsyncSession) -> Callable[[], AsyncGenerator[AsyncSession, Any]]:
     """The session dependency override"""
 
-    async def _override_get_session():
+    async def _override_get_session() -> AsyncGenerator[AsyncSession, Any]:
         yield db_session
 
     return _override_get_session
@@ -83,7 +82,7 @@ def app() -> FastAPI:
 
 
 @pytest.fixture()
-def app_with_db(override_get_session: Callable, app) -> FastAPI:
+def app_with_db(override_get_session: Callable[[], AsyncSession], app: FastAPI) -> FastAPI:
     """Creates an app without loading the model on setup and with database connection"""
     from state import get_session
 
@@ -92,7 +91,7 @@ def app_with_db(override_get_session: Callable, app) -> FastAPI:
 
 
 @pytest.fixture()
-async def async_client(app: FastAPI) -> AsyncGenerator:
+async def async_client(app: FastAPI) -> AsyncGenerator[AsyncClient, Any]:
     """Async HTTP client"""
     async with AsyncClient(app=app, base_url="http://test") as ac:
         yield ac

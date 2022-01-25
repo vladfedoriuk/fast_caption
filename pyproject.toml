@@ -1,0 +1,19 @@
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 120
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.mypy]
+ignore_missing_imports = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unused_configs = true
+show_error_codes = true
+follow_imports = "silent"
+disallow_any_generics = true
+no_implicit_reexport = true

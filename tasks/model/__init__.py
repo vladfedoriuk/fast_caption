@@ -11,9 +11,12 @@ from tasks.model.attention import Attention
 from tasks.model.config import get_model_configuration
 from tasks.model.decoder import Decoder
 from tasks.model.encoder import Encoder
-from tasks.model.utils import load_tokenizer, SERIALIZED_DATA_PATH
+from tasks.model.utils import SERIALIZED_DATA_PATH, load_tokenizer
 
 model_config = get_model_configuration()
+
+
+__all__ = ("get_model",)
 
 
 @lru_cache
@@ -32,9 +35,7 @@ def get_model() -> Tuple[Model, Attention, Encoder, Decoder]:
         input_image_features = np.zeros(model_config.CNN_OUTPUT.get("vgg16"))
         _, _, c = input_image_features.shape
         input_image_features = np.reshape(input_image_features, (-1, c))
-        image_features = encoder_model(
-            np.expand_dims(input_image_features, axis=0), training=False
-        )
+        image_features = encoder_model(np.expand_dims(input_image_features, axis=0), training=False)
         decoder_input = tf.expand_dims(np.array([word_idx["<start>"]]), axis=1)
         hidden = tf.zeros((1, model_config.HIDDEN_DIM))
         decoder_model(decoder_input, image_features, hidden, training=False)

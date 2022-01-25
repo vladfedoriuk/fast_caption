@@ -1,1 +1,11 @@
 -r base.txt
+
+# development
+pip-tools
+pre-commit
+
+# linters
+black
+mypy
+isort
+flake8

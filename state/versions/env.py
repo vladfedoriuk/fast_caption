@@ -1,27 +1,25 @@
 import asyncio
 from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
-
 from sqlmodel import SQLModel
 
 from config import get_settings
 from state.models import Caption  # noqa: Need it for SQLModel.metadata update
 
-from alembic import context
-
 settings = get_settings()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-config = context.config
-config.set_main_option("sqlalchemy.url", settings.postgres_url)
+context_config = context.config
+context_config.set_main_option("sqlalchemy.url", settings.postgres_url)
 
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+fileConfig(str(context_config.config_file_name))
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -73,9 +71,7 @@ async def run_migrations_online():
     and associate a connection with the context.
 
     """
-    connectable = create_async_engine(
-        settings.postgres_url, echo=True, future=True, poolclass=pool.NullPool
-    )
+    connectable = create_async_engine(settings.postgres_url, echo=True, future=True, poolclass=pool.NullPool)
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

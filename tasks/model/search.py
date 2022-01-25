@@ -1,15 +1,17 @@
 import heapq
-from operator import attrgetter, itemgetter
-from dataclasses import dataclass
-from typing import List
 from contextlib import suppress
+from dataclasses import dataclass
 from functools import total_ordering
+from operator import attrgetter, itemgetter
+from typing import List
+
+import numpy as np
 import tensorflow as tf
 from keras import Model
-import numpy as np
 from keras_preprocessing.text import Tokenizer
 
-from tasks.model import get_model_configuration, load_tokenizer
+from tasks.model.config import get_model_configuration
+from tasks.model.utils import load_tokenizer
 
 model_config = get_model_configuration()
 
@@ -28,7 +30,7 @@ class Caption:
         return self.prob < other.prob
 
 
-def beam_search(encoder: Model, decoder: Model, image: np.array, beam_size: int = 3):
+def beam_search(encoder: Model, decoder: Model, image: np.ndarray, beam_size: int = 3) -> str:  # type: ignore
     tokenizer: Tokenizer = load_tokenizer()
 
     word_idx = tokenizer.word_index
@@ -39,10 +41,8 @@ def beam_search(encoder: Model, decoder: Model, image: np.array, beam_size: int 
     image_features = encoder(np.expand_dims(image, axis=0), training=False)
     decoder_input = tf.expand_dims(np.array([word_idx["<start>"]]), axis=1)
 
-    captions = []
-    predictions, hidden, _ = decoder(
-        decoder_input, image_features, hidden, training=False
-    )
+    captions: List[Caption] = []
+    predictions, hidden, _ = decoder(decoder_input, image_features, hidden, training=False)
     predicted_ids = np.argsort(predictions[0])[-beam_size:]
     for idx in reversed(predicted_ids):
         heapq.heappush(
@@ -52,13 +52,9 @@ def beam_search(encoder: Model, decoder: Model, image: np.array, beam_size: int 
     for _ in range(model_config.MAX_SEQ_LEN - 1):
         new_captions = []
         for caption in captions:
-            decoder_input = tf.expand_dims(
-                np.array([word_idx[caption.tokens[-1]]]), axis=1
-            )
+            decoder_input = tf.expand_dims(np.array([word_idx[caption.tokens[-1]]]), axis=1)
             hidden = caption.hidden_state
-            predictions, hidden, _ = decoder(
-                decoder_input, image_features, hidden, training=False
-            )
+            predictions, hidden, _ = decoder(decoder_input, image_features, hidden, training=False)
             predicted_ids = np.argsort(predictions[0])[-beam_size:]
             for idx in reversed(predicted_ids):
                 new_captions.append(
@@ -77,8 +73,5 @@ def beam_search(encoder: Model, decoder: Model, image: np.array, beam_size: int 
             idx = caption.tokens.index("<end>")
             caption.tokens = caption.tokens[:idx]
 
-    finals = [
-        (caption.prob / (len(caption.tokens) ** 0.75), " ".join(caption.tokens))
-        for caption in captions
-    ]
+    finals = [(caption.prob / (len(caption.tokens) ** 0.75), " ".join(caption.tokens)) for caption in captions]
     return min(finals, key=itemgetter(0))[1]

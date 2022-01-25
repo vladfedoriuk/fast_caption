@@ -30,3 +30,9 @@ run-dev: ### Runs the development server
 test:  ### Runs the test cases
 	TEST=1 python -m pytest test
 
+# pre-commit:
+check-all:
+	pre-commit run --all-files
+
+pre-commit-update:
+	pre-commit autoupdate

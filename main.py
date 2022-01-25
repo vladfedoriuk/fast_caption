@@ -2,7 +2,7 @@ import asyncio
 import uuid
 
 import sqlalchemy.exc
-from fastapi import FastAPI, BackgroundTasks, status, Depends, HTTPException, APIRouter
+from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -43,9 +43,7 @@ async def enquire_caption(
     await session.commit()
     await session.refresh(caption_obj)
     background_tasks.add_task(process_image, image_data.url, caption_obj.pk)
-    return JSONResponse(
-        jsonable_encoder(caption_obj), status_code=status.HTTP_202_ACCEPTED
-    )
+    return JSONResponse(jsonable_encoder(caption_obj), status_code=status.HTTP_202_ACCEPTED)
 
 
 @router.get("/retrieve/", status_code=status.HTTP_200_OK, response_model=Caption)
@@ -54,9 +52,7 @@ async def retrieve_caption(
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        caption_obj = await session.execute(
-            select(Caption).where(Caption.pk == caption_uuid)
-        )
+        caption_obj = await session.execute(select(Caption).where(Caption.pk == caption_uuid))
         caption_obj = caption_obj.scalars().one()
     except (sqlalchemy.exc.MultipleResultsFound, sqlalchemy.exc.NoResultFound) as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e

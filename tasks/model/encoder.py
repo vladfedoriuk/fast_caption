@@ -1,5 +1,5 @@
 from keras import Model
-from keras.layers import Dense, Dropout, BatchNormalization
+from keras.layers import BatchNormalization, Dense, Dropout
 
 from tasks.model.config import get_model_configuration
 
