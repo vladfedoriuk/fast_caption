@@ -30,14 +30,11 @@ POSTGRES_DB=...
 TEST_POSTGRES_DB=...
 ```
 
-- Do not forget to modify the `alembic.ini` file:`sqlalchemy.url` must match the environment variables setup
-
 - To  better manage the package versions and their dependencies consistency,
 the project employs `pip-tools`.
 
-* `pip-tools` installation and requirements compilation:
+* requirements compilation:
 ```
-pip install pip-tools==6.4.0
 make requirements
 ```
 

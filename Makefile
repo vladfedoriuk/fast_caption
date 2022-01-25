@@ -4,7 +4,7 @@ DOCKER_DIR=docker
 objects = $(wildcard $(IN_DIR)/*.in)
 outputs = $(objects:.in=.txt)
 
-.PHONY: requirements install-dev services run-dev test
+.PHONY: requirements install-dev services run-dev test check-all pre-commit-update
 
 requirements: $(outputs)
 
