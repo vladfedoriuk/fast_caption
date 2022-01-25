@@ -51,6 +51,10 @@ make install-dev
 ```commandline
 pip install tensorflow keras
 ```
+- The project uses `git pre-commit hooks` for a better development experience. To install the hooks run:
+```commandline
+pre-commit install
+```
 - Bring up the services (PostgreSQL database and pgAdmin4):
 ```commandline
 make services
